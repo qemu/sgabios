@@ -45,7 +45,7 @@
 #define FCR_FIFO_ENABLE		0x01
 #define PORT_DIVISOR		115200
 #define TRANSMIT_READY_BIT      0x20
-#define BIOS_BUILD_VERSION	"$Id: sgabios.S 110392 2008-02-26 00:59:11Z nil $"
+#define BIOS_BUILD_VERSION	"$Id$"
 
 #define KBD_HEAD		0x1a
 #define KBD_TAIL		0x1c

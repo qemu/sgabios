@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# $Id: Makefile 110392 2008-02-26 00:59:11Z nil $
+# $Id$
 
 CFLAGS = -Wall -O2 -s
 
