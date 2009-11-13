@@ -1735,6 +1735,7 @@ write_char_tail:
  */
 write_string:
 	call set_cursor_position
+	pushw %ds
 	pushw %es
 	pushw %es
 	popw %ds		/* ds = es */
@@ -1742,7 +1743,10 @@ write_string:
 	testb $2, %al
 	jnz write_attr_string
 	call send_attribute	/* send attribute in %bl */
+	test %cx, %cx
+	jz write_string_empty
 	call send_string	/* plaintext out */
+write_string_empty:
 	jmp write_string_update_cursor
 write_attr_string:
 	call send_attr_string	/* text+attrib out */
@@ -1753,6 +1757,7 @@ write_string_update_cursor:
 	call set_cursor_position
 write_string_tail:
 	popw %es
+	popw %ds
 	ret
 
 /*
