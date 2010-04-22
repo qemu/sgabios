@@ -1,4 +1,4 @@
-# Copyright 2007 Google Inc.
+# Copyright 2010 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,65 @@
 #
 # $Id$
 
-CFLAGS = -Wall -O2 -s
+BUILD_DATE = \"$(shell date -u)\"
+BUILD_SHORT_DATE = \"$(shell date -u +%D)\"
+BUILD_HOST = \"$(shell hostname)\"
+BUILD_USER = \"$(shell whoami)\"
 
-.SUFFIXES: .bin
+CFLAGS := -Wall -Os -m32 -nostdlib
 
-all: sgabios.bin
+ASFLAGS := $(CFLAGS)
+ASFLAGS += -DBUILD_DATE="$(BUILD_DATE)"
+ASFLAGS += -DBUILD_SHORT_DATE="$(BUILD_SHORT_DATE)"
+ASFLAGS += -DBUILD_HOST="$(BUILD_HOST)"
+ASFLAGS += -DBUILD_USER="$(BUILD_USER)"
 
-sgabios.bin: sgabios.S version.h
+LDSCRIPT := rom16.ld
+LDFLAGS := -T $(LDSCRIPT) -nostdlib
+OBJCOPY := objcopy
 
-version.h: Makefile sgabios.S
-	@echo '#define BIOS_BUILD_DATE "'`date -u +%D`'"' >version.h
-	@echo '#define BIOS_FULL_DATE "'`date -u`'"' >>version.h
-	@echo '#define BIOS_BUILD_HOST "'`echo $$LOGNAME@$$HOSTNAME`'"' >>version.h
+ASRCS = sgabios.S
 
-.S.bin:
-	$(CC) -c $(CFLAGS) $*.S -o $*.o
-	$(LD) -Ttext 0x0 -s --oformat binary $*.o -o $*.bin
+CSRCS =
 
+SRCS = $(CSRCS) $(ASRCS)
+
+OBJS = ${CSRCS:.c=.o} ${ASRCS:.S=.o}
+INCS = ${CSRCS:.c=.h} ${ASRCS:.S=.h}
+
+PROGS = sgabios.bin csum8
+
+.SUFFIXES: .bin .elf
+.PHONY: buildinfo
+
+all: $(PROGS)
+
+sgabios.bin: sgabios.elf
+	$(OBJCOPY) -O binary $< $@
+	./csum8 $@
+
+sgabios.elf: .depend $(OBJS) $(LDSCRIPT) csum8
+	$(LD) $(LDFLAGS) $(OBJS) -o $@
+
+csum8: csum8.c
+	$(CC) -Wall -O2 -o $@ $<
+
+sgabios.o: buildinfo
+
+
+buildinfo:
+	touch sgabios.S
 clean:
-	$(RM) *.s *.o *.bin *.srec *.com version.h
+	$(RM) $(PROGS) $(OBJS) *.elf *.srec *.com version.h
+
+.depend:: $(INCS) $(SRCS) Makefile
+	$(RM) .depend
+	$(CPP) -M $(CFLAGS) $(SRCS) >.tmpdepend && mv .tmpdepend .depend
+
+ifeq (.depend, $(wildcard .depend))
+include .depend
+else
+# if no .depend file existed, add a make clean to the end of building .depend
+.depend::
+	$(MAKE) clean
+endif
