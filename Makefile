@@ -16,10 +16,10 @@
 
 BUILD_DATE = \"$(shell date -u)\"
 BUILD_SHORT_DATE = \"$(shell date -u +%D)\"
-BUILD_HOST = \"$(shell hostname)\"
-BUILD_USER = \"$(shell whoami)\"
+BUILD_HOST ?= \"$(shell hostname)\"
+BUILD_USER ?= \"$(shell whoami)\"
 
-CFLAGS := -Wall -Os -m32 -nostdlib
+CFLAGS := -Wall -Os -m32 -nostdlib -Wa,--divide
 
 ASFLAGS := $(CFLAGS)
 ASFLAGS += -DBUILD_DATE="$(BUILD_DATE)"

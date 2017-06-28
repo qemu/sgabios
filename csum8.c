@@ -57,7 +57,10 @@ int main(int argc, char **argv)
   }
   sum &= 0xff;
   csum = -sum & 0xff;
-  write(fd, &csum, 1);
+  if (write(fd, &csum, 1) < 0) {
+    perror("");
+    exit(1);
+  }
   close(fd);
   fprintf(stderr, "%s: sum = 0x%02x, wrote byte 0x%02x\n", argv[1], sum, csum);
   return 0;
