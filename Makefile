@@ -30,6 +30,7 @@ ASFLAGS += -DBUILD_USER="$(BUILD_USER)"
 LDSCRIPT := rom16.ld
 LDFLAGS := -T $(LDSCRIPT) -nostdlib
 OBJCOPY := objcopy
+HOSTCC := $(CC)
 
 ASRCS = sgabios.S
 
@@ -55,7 +56,7 @@ sgabios.elf: .depend $(OBJS) $(LDSCRIPT) csum8
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
 csum8: csum8.c
-	$(CC) -Wall -O2 -o $@ $<
+	$(HOSTCC) -Wall -O2 -o $@ $<
 
 sgabios.o: buildinfo
 
