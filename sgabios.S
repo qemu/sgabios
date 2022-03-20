@@ -105,9 +105,9 @@ long_version:
   .ascii ") "
   .asciz BUILD_DATE
 term_cols:
-  .byte 80             /* overwritten at rom init with detected value */
+  .byte 120             /* overwritten at rom init with detected value */
 term_rows:
-  .byte 24             /* overwritten at rom init with detected value */
+  .byte 30             /* overwritten at rom init with detected value */
 term_init_string:      /* terminal reply: \033[n;mR n=row, m=col */
   .asciz "\033[1;256r\033[256;256H\033[6n"
   /* reset the scroll, move to col 256, row 256, ask current position */
@@ -210,9 +210,9 @@ serial_port_base_address:
  */
 
 #define MEMCONSOLE_BUFFER_SIZE  32768
-#define MEMCONSOLE_SIGNATURE  0xdeadbabe
+#define MEMCONSOLE_SIGNATURE  0x6d616b65
 #define MEMCONSOLE_ENDINDEX_OFF  0x0b
-#define SGABIOS_EBDA_SIGNATURE  0x00414753
+#define SGABIOS_EBDA_SIGNATURE  0x626f6f74
 
 memconsole_buffer_start:               /* pulled from ebda struct */
   .long  0x00000000                    /* 0 = not found/no logging */
